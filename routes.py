@@ -14,7 +14,6 @@ def shorten_url():
     """
     destination_url = request.json['destination_url']
     url = URL(destination_url=destination_url)
-    db.session.add(url)
     db.session.commit()
     return jsonify({'short_url': url.short_url}), 201
 

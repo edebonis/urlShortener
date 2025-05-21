@@ -1,6 +1,7 @@
 from app import db
-import string  # to generate random short URL
+import string
 import random
+from sqlalchemy.exc import IntegrityError
 
 
 class URL(db.Model):
@@ -18,18 +19,34 @@ class URL(db.Model):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.short_url = self.generate_short_url()
+        db.session.add(self)  # Add instance to session
+        self._generate_and_set_short_url()  # Call the new method
 
-    def generate_short_url(self):
+    def _generate_and_set_short_url(self):
         length = 6
         max_attempts_per_length = 10
         characters = string.ascii_letters + string.digits
 
         while True:
-            attempts_at_current_length = 0
+            attempts_this_length = 0
             for _ in range(max_attempts_per_length):
-                short_url = ''.join(random.choice(characters) for _ in range(length))
-                if not URL.query.filter_by(short_url=short_url).first():
-                    return short_url
-                attempts_at_current_length += 1
+                candidate_url = ''.join(random.choice(characters) for _ in range(length))
+                self.short_url = candidate_url
+                try:
+                    # Attempt to flush this specific object to check for uniqueness
+                    # The object is already in the session from __init__
+                    db.session.flush([self]) 
+                    return  # Success, unique URL found and flushed
+                except IntegrityError:
+                    db.session.rollback()  # Rollback due to unique constraint violation
+                    attempts_this_length += 1
+                    # Continue to next attempt in the inner loop
+                except Exception as e:
+                    db.session.rollback() # Rollback for any other error during flush
+                    # For now, treat as a failed attempt and continue.
+                    # A more robust implementation might log this error or re-raise if unexpected.
+                    attempts_this_length += 1
+            
+            # If max_attempts_per_length reached for current length
             length += 1
+            # The outer loop will restart with the new length
