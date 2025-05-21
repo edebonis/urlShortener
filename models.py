@@ -21,10 +21,15 @@ class URL(db.Model):
         self.short_url = self.generate_short_url()
 
     def generate_short_url(self):
+        length = 6
+        max_attempts_per_length = 10
         characters = string.ascii_letters + string.digits
-        short_url = ''.join(random.choice(characters) for _ in range(6))
-        # Check if the short URL exists in database
-        while URL.query.filter_by(short_url=short_url).first():
-            short_url = ''.join(random.choice(characters) for _ in range(6))
 
-        return short_url
+        while True:
+            attempts_at_current_length = 0
+            for _ in range(max_attempts_per_length):
+                short_url = ''.join(random.choice(characters) for _ in range(length))
+                if not URL.query.filter_by(short_url=short_url).first():
+                    return short_url
+                attempts_at_current_length += 1
+            length += 1
