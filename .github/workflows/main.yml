@@ -1,5 +1,15 @@
-name: ClearlyNoticed Action
-  # You may pin to the exact commit or the version.
-  # uses: dabutvin/chive-action@724409eb4087dc731ba9d8f158de74a86d9d4244
-  uses: dabutvin/chive-action@1.1.0
-          
+steps:
+  # Checking out the repository which is to be actioned
+  - uses: actions/checkout@v2
+  # Implementing action on repository
+  - uses: VinnyBabuManjaly/copyright-action@v1.0.0
+    with:
+      CopyrightString: 'Copyright check\nAll rights reserved (c)\n'
+      FileType: '.py, .txt'
+      Path: 'testfolder1/, testfolder2'
+      IgnorePath: 'testfolder1/a/, testfolder3'
+  # Creates pull request with all changes in file
+  - name: Create Pull Request
+    uses: peter-evans/create-pull-request@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
