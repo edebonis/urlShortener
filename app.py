@@ -5,7 +5,6 @@ from config import Config
 # Create the SQLAlchemy instance
 db = SQLAlchemy()
 
-
 def create_app():
     # Create the Flask app
     app = Flask(__name__)
