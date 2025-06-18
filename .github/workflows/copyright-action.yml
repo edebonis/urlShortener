@@ -1,0 +1,14 @@
+            - name: Copyright Action
+  # You may pin to the exact commit or the version.
+  # uses: VinnyBabuManjaly/copyright-action@5fcf89f343a471d3482731b2e3b1abbe0b219454
+  uses: VinnyBabuManjaly/copyright-action@v1.0.0
+  with:
+    # String to be added as Copyright notice(multiline copyrights are possible)
+    CopyrightString: # optional
+    # Type of files(extension) for which copyright notice has to be added in the given file path
+    FileType: # optional
+    # Path in which copyright notice has to be added to files
+    Path: # optional
+    # Path ignored without adding copyright notice
+    IgnorePath: # optional
+          
